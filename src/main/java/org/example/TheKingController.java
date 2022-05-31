@@ -52,4 +52,9 @@ public class TheKingController {
     ) {
         return "idk";
     }
+
+    @GetMapping("/error")
+    public String getError(){
+        return "error";
+    }
 }
