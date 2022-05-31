@@ -45,17 +45,42 @@ public class GameServer {
     public int addUser(String idOfRoom){
         int index = rooms.indexOf(new Room(idOfRoom));
         Room room = rooms.get(index);
-        int userCode = room.addUser();
-        rooms.set(index, room);
-        return userCode;
+        if (room.users.size() < 8){
+            int userCode = room.addUser();
+            rooms.set(index, room);
+            return userCode;
+        }
+        else{
+            return -1;
+        }
     }
 
     public String getAvailableRoom(){
         Room room = rooms.get(rooms.size() - 1);
-        if (room.isGameStarted) {
+        if (room.isGameStarted || room.users.size() == 8) {
             createRoom();
             room = rooms.get(rooms.size() - 1);
         }
         return room.idOfRoom;
+    }
+
+    public boolean isRightId(String idOfRoom){
+        return rooms.contains(new Room(idOfRoom));
+    }
+
+    public Room getRoom(String idOfRoom){
+        int index = rooms.indexOf(new Room(idOfRoom));
+        return rooms.get(index);
+    }
+
+    public boolean isRightIdAndCode(String idOfRoom, int userCode){
+        int index = rooms.indexOf(new Room(idOfRoom));
+        if (index >= 0){
+            Room room = rooms.get(index);
+            if (room.users.contains(new User(userCode))){
+                return true;
+            }
+        }
+        return false;
     }
 }
