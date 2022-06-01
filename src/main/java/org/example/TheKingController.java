@@ -6,9 +6,9 @@ import org.json.simple.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.awt.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class TheKingController {
@@ -19,17 +19,17 @@ public class TheKingController {
         return "index";
     }
 
-    @GetMapping("/theking")
+    @GetMapping(value = "/theking", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     public String getRoomId(Model model) {
         String idOfRoom = gameServer.getAvailableRoom();
         JSONObject object = new JSONObject();
         object.put("id", idOfRoom);
         model.addAttribute("json", object.toJSONString());
-        return "json";
+        return object.toJSONString();
     }
 
-    @RequestMapping(value = "/theking/room", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
+    @GetMapping("/theking/room")
     public String getUserCode(
             @RequestParam(name = "id") String idOfRoom,
             @RequestParam(name = "user-code", required = false, defaultValue = "-1") int user,
@@ -43,17 +43,17 @@ public class TheKingController {
                     object.put("userCode", userCode);
                     object.put("error", false);
                     model.addAttribute("json", object.toJSONString());
-                    return object.toJSONString();
+                    return "json";
                 }
                 else{
                     object.put("error", true);
                     model.addAttribute("json", object.toJSONString());
-                    return object.toJSONString();
+                    return "json";
                 }
             }
             object.put("error", true);
             model.addAttribute("json", object.toJSONString());
-            return object.toJSONString();
+            return "json";
         }
         else{
             if (gameServer.isRightIdAndCode(idOfRoom, user)){
@@ -61,12 +61,12 @@ public class TheKingController {
                 object.put("error", false);
                 object.put("time", room.getSecondsReminder());
                 model.addAttribute("json", object.toJSONString());
-                return object.toJSONString();
+                return "json";
             }
             object.put("error", true);
             model.addAttribute("json", object.toJSONString());
         }
-        return object.toJSONString();
+        return "json";
     }
 
     @GetMapping("/theking/delete")
