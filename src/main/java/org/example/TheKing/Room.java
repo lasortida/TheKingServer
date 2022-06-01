@@ -6,6 +6,7 @@ public class Room {
     Storage storage;
     String idOfRoom;
     int secondsReminder;
+    public boolean isTimerStarted;
     ArrayList<User> users;
     boolean isGameStarted;
 
@@ -50,6 +51,7 @@ public class Room {
                 new Thread(){
                     @Override
                     public void run() {
+                        isTimerStarted = true;
                         secondsReminder = 15;
                         while(secondsReminder > 0){
                             try {

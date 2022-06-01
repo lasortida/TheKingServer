@@ -58,6 +58,7 @@ public class TheKingController {
                 Room room = gameServer.getRoom(idOfRoom);
                 object.put("error", false);
                 object.put("time", room.getSecondsReminder());
+                object.put("isTimerStarted", room.isTimerStarted);
                 return object.toJSONString();
             }
             object.put("error", true);
