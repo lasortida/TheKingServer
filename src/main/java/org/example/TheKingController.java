@@ -1,6 +1,8 @@
 package org.example;
 
+import com.google.gson.Gson;
 import org.example.TheKing.GameServer;
+import org.example.TheKing.Reply;
 import org.example.TheKing.Room;
 import org.json.simple.JSONObject;
 import org.springframework.http.MediaType;
@@ -76,14 +78,21 @@ public class TheKingController {
         return "{\"ok\":true}";
     }
 
-//    @GetMapping("/theking/start")
-//    public String getStartStatus(
-//            @RequestParam(name = "id") String idOfRoom,
-//            @RequestParam(name = "user-code") int userCode,
-//            Model model
-//    ) {
-//        return "json";
-//    }
+    @GetMapping(value = "/theking/start", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String getStartStatus(
+            @RequestParam(name = "id") String idOfRoom,
+            @RequestParam(name = "user-code") int userCode
+    ) {
+        if (gameServer.isRightId(idOfRoom)){
+            Gson gson = new Gson();
+            Room room = gameServer.getRoom(idOfRoom);
+            Reply reply = Reply.getFromRoom(room, userCode);
+            String answer = gson.toJson(reply);
+            return answer;
+        }
+        return "{\"error\": true}";
+    }
 
     @GetMapping("/error")
     public String getError(){

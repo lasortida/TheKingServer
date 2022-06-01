@@ -7,10 +7,32 @@ public class Room {
     String idOfRoom;
     int secondsReminder;
     public boolean isTimerStarted;
-    ArrayList<User> users;
+    int usersCount;
     boolean isGameStarted;
+    boolean permission = true;
 
+    ArrayList<User> users;
     int numberOfWeek;
+
+    Thread timer = new Thread(){
+        @Override
+        public void run() {
+            while (true){
+                while (secondsReminder > 0 && permission){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    secondsReminder--;
+                }
+                if (secondsReminder == 0 && permission){
+                    isGameStarted = true;
+                    startGame();
+                }
+            }
+        }
+    };
 
     public Room(String idOfRoom){
         this.idOfRoom = idOfRoom;
@@ -34,9 +56,31 @@ public class Room {
         Country country = user.country;
         storage.countries[country.id] = country;
         users.set(userCode, null);
+        usersCount--;
+        if (isTimerStarted && !isGameStarted){
+            if (usersCount < 2){
+                isTimerStarted = false;
+                permission = false;
+            }
+            else{
+                secondsReminder = 15;
+            }
+        }
     }
 
     public int addUser(){
+        usersCount++;
+        if (usersCount == 2){
+            isTimerStarted = true;
+            if (secondsReminder == 0){
+                secondsReminder = 15;
+                timer.start();
+            }
+            else{
+                secondsReminder = 15;
+                permission = true;
+            }
+        }
         if (users.contains(null)){
             int userCode = users.indexOf(null);
             users.set(userCode, new User(userCode));
@@ -47,24 +91,6 @@ public class Room {
             int userCode = users.size();
             users.add(new User(userCode));
             setCountryToUser(userCode);
-            if (users.size() == 2){
-                new Thread(){
-                    @Override
-                    public void run() {
-                        isTimerStarted = true;
-                        secondsReminder = 15;
-                        while(secondsReminder > 0){
-                            try {
-                                Thread.sleep(1000);
-                                secondsReminder--;
-                            } catch (InterruptedException e){
-                                e.printStackTrace();
-                            }
-                        }
-                        isGameStarted = true;
-                    }
-                }.start();
-            }
             return userCode;
         }
     }
@@ -82,5 +108,9 @@ public class Room {
 
     public int getSecondsReminder(){
         return secondsReminder;
+    }
+
+    public void startGame(){
+        numberOfWeek = 1;
     }
 }

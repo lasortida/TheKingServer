@@ -45,7 +45,7 @@ public class GameServer {
     public int addUser(String idOfRoom){
         int index = rooms.indexOf(new Room(idOfRoom));
         Room room = rooms.get(index);
-        if (room.users.size() < 8){
+        if (room.usersCount < 8){
             int userCode = room.addUser();
             rooms.set(index, room);
             return userCode;
@@ -57,7 +57,7 @@ public class GameServer {
 
     public String getAvailableRoom(){
         Room room = rooms.get(rooms.size() - 1);
-        if (room.isGameStarted || room.users.size() == 8) {
+        if (room.isGameStarted || room.usersCount == 8) {
             createRoom();
             room = rooms.get(rooms.size() - 1);
         }
