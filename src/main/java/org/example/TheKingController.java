@@ -3,10 +3,12 @@ package org.example;
 import org.example.TheKing.GameServer;
 import org.example.TheKing.Room;
 import org.json.simple.JSONObject;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.awt.*;
 
 @Controller
 public class TheKingController {
@@ -26,7 +28,8 @@ public class TheKingController {
         return "json";
     }
 
-    @GetMapping("/theking/room")
+    @RequestMapping(value = "/theking/room", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     public String getUserCode(
             @RequestParam(name = "id") String idOfRoom,
             @RequestParam(name = "user-code", required = false, defaultValue = "-1") int user,
@@ -40,17 +43,17 @@ public class TheKingController {
                     object.put("userCode", userCode);
                     object.put("error", false);
                     model.addAttribute("json", object.toJSONString());
-                    return "json";
+                    return object.toJSONString();
                 }
                 else{
                     object.put("error", true);
                     model.addAttribute("json", object.toJSONString());
-                    return "json";
+                    return object.toJSONString();
                 }
             }
             object.put("error", true);
             model.addAttribute("json", object.toJSONString());
-            return "json";
+            return object.toJSONString();
         }
         else{
             if (gameServer.isRightIdAndCode(idOfRoom, user)){
@@ -58,12 +61,12 @@ public class TheKingController {
                 object.put("error", false);
                 object.put("time", room.getSecondsReminder());
                 model.addAttribute("json", object.toJSONString());
-                return "json";
+                return object.toJSONString();
             }
             object.put("error", true);
             model.addAttribute("json", object.toJSONString());
         }
-        return "json";
+        return object.toJSONString();
     }
 
     @GetMapping("/theking/delete")
