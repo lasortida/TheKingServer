@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.print.attribute.standard.Media;
+
 @Controller
 public class TheKingController {
     GameServer gameServer = new GameServer();
@@ -21,19 +23,18 @@ public class TheKingController {
 
     @GetMapping(value = "/theking", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String getRoomId(Model model) {
+    public String getRoomId() {
         String idOfRoom = gameServer.getAvailableRoom();
         JSONObject object = new JSONObject();
         object.put("id", idOfRoom);
-        model.addAttribute("json", object.toJSONString());
         return object.toJSONString();
     }
 
-    @GetMapping("/theking/room")
+    @GetMapping(value = "/theking/room", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     public String getUserCode(
             @RequestParam(name = "id") String idOfRoom,
-            @RequestParam(name = "user-code", required = false, defaultValue = "-1") int user,
-            Model model
+            @RequestParam(name = "user-code", required = false, defaultValue = "-1") int user
     ) {
         JSONObject object = new JSONObject();
         if (user == -1){
@@ -42,42 +43,36 @@ public class TheKingController {
                 if (userCode != -1){
                     object.put("userCode", userCode);
                     object.put("error", false);
-                    model.addAttribute("json", object.toJSONString());
-                    return "json";
+                    return object.toJSONString();
                 }
                 else{
                     object.put("error", true);
-                    model.addAttribute("json", object.toJSONString());
-                    return "json";
+                    return object.toJSONString();
                 }
             }
             object.put("error", true);
-            model.addAttribute("json", object.toJSONString());
-            return "json";
+            return object.toJSONString();
         }
         else{
             if (gameServer.isRightIdAndCode(idOfRoom, user)){
                 Room room = gameServer.getRoom(idOfRoom);
                 object.put("error", false);
                 object.put("time", room.getSecondsReminder());
-                model.addAttribute("json", object.toJSONString());
-                return "json";
+                return object.toJSONString();
             }
             object.put("error", true);
-            model.addAttribute("json", object.toJSONString());
         }
-        return "json";
+        return object.toJSONString();
     }
 
-    @GetMapping("/theking/delete")
+    @GetMapping(value = "/theking/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     public String delUserFromRoom(
             @RequestParam(name = "id") String idOfRoom,
-            @RequestParam(name = "user-code") int userCode,
-            Model model
+            @RequestParam(name = "user-code") int userCode
     ) {
         gameServer.deleteUser(idOfRoom, userCode);
-        model.addAttribute("json", "{\"ok\":true}");
-        return "json";
+        return "{\"ok\":true}";
     }
 
 //    @GetMapping("/theking/start")
